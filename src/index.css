@@ -13,5 +13,7 @@
     background-color: var(--color-bgDeep);
     color: white;
     overflow: hidden;
+    margin: 0;
+    padding: 0;
   }
 }

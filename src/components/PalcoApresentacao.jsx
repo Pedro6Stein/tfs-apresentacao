@@ -7,23 +7,21 @@ export default function PalcoApresentacao({ children }) {
   useEffect(() => {
     const handleResize = () => {
       const { innerWidth, innerHeight } = window;
-      const baseWidth = 1920; // Resolução Full HD padrão de TV
+      const baseWidth = 1920; 
       const baseHeight = 1080;
       
-      // Calcula o zoom necessário para caber na tela sem quebrar nada
       const scaleX = innerWidth / baseWidth;
       const scaleY = innerHeight / baseHeight;
       setScale(Math.min(scaleX, scaleY)); 
     };
 
     window.addEventListener('resize', handleResize);
-    handleResize(); // Roda na primeira renderização
+    handleResize();
 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
-    // Fundo preto total para o que "sobrar" da tela (Letterbox)
     <div className="w-screen h-screen bg-black flex items-center justify-center overflow-hidden">
       <div 
         ref={containerRef}
@@ -33,12 +31,13 @@ export default function PalcoApresentacao({ children }) {
           transform: `scale(${scale})`,
           transformOrigin: 'center center' 
         }}
-        className="relative bg-bgDeep shadow-2xl overflow-hidden flex items-center justify-center"
+        className="relative bg-bgDeep overflow-hidden flex items-center justify-center shadow-[0_0_50px_rgba(0,0,0,0.8)]"
       >
-        {/* Fundo com efeito de grade sutil para dar o ar "tecnológico" */}
+        {/* Fundo Grade Tecnológica + Efeito de Luz Central (Vignette) */}
         <div className="absolute inset-0 opacity-20 bg-[linear-gradient(rgba(0,229,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,229,255,0.05)_1px,transparent_1px)] bg-[size:80px_80px]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(5,11,20,0.8)_100%)] pointer-events-none"></div>
         
-        {/* Onde os slides vão aparecer */}
+        {/* Camada de Conteúdo */}
         <div className="relative z-10 w-full h-full">
           {children}
         </div>
