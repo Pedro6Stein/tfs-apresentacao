@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import FundoVivo from './FundoVIvo';
 
 export default function PalcoApresentacao({ children }) {
   const containerRef = useRef(null);
@@ -33,11 +34,16 @@ export default function PalcoApresentacao({ children }) {
         }}
         className="relative bg-bgDeep overflow-hidden flex items-center justify-center shadow-[0_0_50px_rgba(0,0,0,0.8)]"
       >
-        {/* Fundo Grade Tecnológica + Efeito de Luz Central (Vignette) */}
+        {/* 1. Fundo: Grelha Tecnológica */}
         <div className="absolute inset-0 opacity-20 bg-[linear-gradient(rgba(0,229,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,229,255,0.05)_1px,transparent_1px)] bg-[size:80px_80px]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(5,11,20,0.8)_100%)] pointer-events-none"></div>
         
-        {/* Camada de Conteúdo */}
+        {/* 2. Fundo Vivo: Partículas, Luzes e Marquee (Letreiro) */}
+        <FundoVivo />
+        
+        {/* 3. Iluminação/Sombra: Escurece as bordas para focar a atenção no centro (Vignette) */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(5,11,20,0.85)_100%)] pointer-events-none z-0"></div>
+        
+        {/* 4. Camada Principal: Onde os Slides são renderizados */}
         <div className="relative z-10 w-full h-full">
           {children}
         </div>
