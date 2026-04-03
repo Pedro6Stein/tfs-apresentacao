@@ -1,96 +1,150 @@
-import { motion } from 'framer-motion';
-import { Briefcase, UserCheck, CheckCircle2 } from 'lucide-react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, ShieldCheck, Briefcase, CheckCircle2, MessageSquare, Info, ChevronRight, HelpCircle } from 'lucide-react';
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
-  exit: { opacity: 0, x: -50, filter: "blur(10px)", transition: { duration: 0.4 } }
+// Mapeamento de significados para ajudar o apresentador e o público
+const roleMap = {
+  AS: { nome: "Analista de Sistemas", desc: "Quem executa a tarefa técnica (Põe a mão na massa)." },
+  CEO: { nome: "Diretor Executivo", desc: "Quem tem o poder de decisão e aprovação final." },
+  GTI: { nome: "Gerente de TI", desc: "Quem coordena os recursos e garante o alinhamento." },
+  AN: { nome: "Analista de Negócio", desc: "Quem é consultado sobre os requisitos do cliente." },
+  UN: { nome: "Usuário de Negócio", desc: "Quem utiliza o sistema e fornece feedback final." }
 };
 
-const rowVariants = {
-  hidden: { opacity: 0, y: 30, scale: 0.95, filter: "blur(5px)" },
-  show: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", transition: { duration: 0.6, ease: "easeOut" } }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, x: -20 },
-  show: { opacity: 1, x: 0 }
-};
+const raciData = [
+  { id: 1, proc: "Entrega de Benefícios", r: "AS", a: "CEO", c: "GTI", i: "AN", dica: "Alinhamento das soluções Java/NextJS com o valor comercial e necessidades de mercado." },
+  { id: 2, proc: "Otimização de Recursos", r: "CEO", a: "GTI", c: "AN", i: "AS", dica: "Maximização da eficiência operacional através de infraestrutura escalável e alocação rentável." },
+  { id: 3, proc: "Gestão de Orçamento e Custos", r: "GTI", a: "CEO", c: "AS", i: "AN", dica: "Monitoramento rigoroso de custos de desenvolvimento e infraestrutura via Story Points no Jira." },
+  { id: 4, proc: "Inovação Gerenciada", r: "GTI", a: "AS", c: "CEO", i: "AN", dica: "Validação de novas tecnologias em ambiente Sandbox para mitigação de obsolescência técnica." },
+  { id: 5, proc: "Terceiros Gerenciados", r: "GTI", a: "CEO", c: "AN", i: "AS", dica: "Supervisão de performance e conformidade de SLAs de provedores Cloud e APIs externas." },
+  { id: 6, proc: "Qualidade Gerenciada", r: "AS", a: "GTI", c: "GTI", i: "AN", dica: "Instituição do Definition of Done (DoD) para garantia de sustentabilidade e limpeza do código." },
+  { id: 7, proc: "Segurança Gerenciada", r: "GTI", a: "AS", c: "AN", i: "CEO", dica: "Proteção do capital intelectual e dados sensíveis através de controles RBAC e autenticação MFA." },
+  { id: 8, proc: "Soluções e Construção", r: "AS", a: "GTI", c: "AS", i: "AN", dica: "Ciclo de construção rastreável com integração nativa entre commits padronizados e tarefas do Jira." },
+  { id: 9, proc: "Conhecimento Gerenciado", r: "GTI", a: "UN", c: "AS", i: "AN", dica: "Retenção de inteligência corporativa via documentação técnica centralizada em Wiki/Confluence." },
+  { id: 10, proc: "Configuração Gerenciada", r: "AS", a: "GTI", c: "AN", i: "CEO", dica: "Preservação da integridade ambiental através de versionamento rigoroso e aplicação de Git Flow." },
+  { id: 11, proc: "Serviços de Segurança", r: "GTI", a: "AN", c: "AS", i: "CEO", dica: "Blindagem ativa de APIs com Spring Security e gestão de registros (logs) de acesso sistêmico." },
+  { id: 12, proc: "Operações Gerenciadas", r: "AS", a: "GTI", c: "AN", i: "CEO", dica: "Manutenção da disponibilidade (uptime) e execução de rotinas preventivas de backup de dados." },
+  { id: 13, proc: "Desempenho e Conformidade", r: "GTI", a: "AN", c: "AS", i: "CEO", dica: "Avaliação de produtividade real e identificação de gargalos via métricas de Lead Time em Dashboards." },
+  { id: 14, proc: "Regulações Externas", r: "GTI", a: "AN", c: "CEO", i: "AS", dica: "Assegurar conformidade contínua com as diretrizes da LGPD, ISO 27001 e normas do BACEN." }
+];
 
 export default function TabelaRACI() {
-  // Array de dados para facilitar a manutenção e animação
-  const raciData = [
-    {
-      dominio: "Entrega de Benefícios",
-      resp: { sigla: "AS", papel: "Analista de Sistemas", cor: "text-neonBlue", bg: "bg-neonBlue/10", border: "border-neonBlue/30" },
-      aprov: { sigla: "CEO", papel: "Diretor Executivo", cor: "text-yellow-400", bg: "bg-yellow-400/10", border: "border-yellow-400/30" }
-    },
-    {
-      dominio: "Otimização de Recursos",
-      resp: { sigla: "CEO", papel: "Diretor Executivo", cor: "text-yellow-400", bg: "bg-yellow-400/10", border: "border-yellow-400/30" },
-      aprov: { sigla: "GTI", papel: "Gerente de TI", cor: "text-purple-400", bg: "bg-purple-400/10", border: "border-purple-400/30" }
-    },
-    {
-      dominio: "Segurança Gerenciada",
-      resp: { sigla: "GTI", papel: "Gerente de TI", cor: "text-purple-400", bg: "bg-purple-400/10", border: "border-purple-400/30" },
-      aprov: { sigla: "AS", papel: "Analista de Sistemas", cor: "text-neonBlue", bg: "bg-neonBlue/10", border: "border-neonBlue/30" }
+  const [selecionado, setSelecionado] = useState(null);
+
+  const getRoleStyle = (role) => {
+    switch(role) {
+      case 'AS': return "text-neonBlue bg-neonBlue/10 border-neonBlue/30";
+      case 'CEO': return "text-yellow-500 bg-yellow-500/10 border-yellow-500/30";
+      case 'GTI': return "text-purple-400 bg-purple-400/10 border-purple-400/30";
+      case 'AN': return "text-googleBlue bg-google-400/10 border-googleBlue/30";
+      case 'UN': return "text-green-400 bg-green-400/10 border-green-400/30";
+      default: return "text-gray-400 bg-white/5 border-white/10";
     }
-  ];
+  };
+
+  const springTransition = { type: "spring", stiffness: 400, damping: 40 };
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="show" exit="exit" className="w-full h-full flex flex-col justify-center p-32">
-      
-      <motion.div variants={itemVariants}>
-        <p className="text-neonBlue text-2xl font-semibold tracking-widest mb-4 uppercase">08 / Papéis e Responsabilidades</p>
-        <h1 className="text-6xl font-bold text-white mb-16">Matriz RACI Resumida</h1>
+    <div className="w-full h-full flex flex-col justify-center p-16 relative">
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+        <p className="text-neonBlue text-xl font-semibold tracking-widest mb-1 uppercase">08 / Governança e Papéis</p>
+        <h1 className="text-5xl font-bold text-white flex items-center gap-3">
+          <ShieldCheck size={40} className="text-neonBlue" /> Matriz RACI: Governança TFS
+        </h1>
       </motion.div>
 
-      {/* Tabela Refatorada com CSS Grid e Cards */}
-      <div className="w-full flex flex-col gap-6">
-        
-        {/* Cabeçalho da "Tabela" */}
-        <motion.div variants={itemVariants} className="grid grid-cols-12 gap-6 px-8 py-4 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm text-2xl font-bold text-gray-400 uppercase tracking-wider">
-          <div className="col-span-6">Objetivo (Domínio COBIT)</div>
-          <div className="col-span-3 flex items-center justify-center gap-2 text-neonBlue"><Briefcase size={24} /> Responsável (R)</div>
-          <div className="col-span-3 flex items-center justify-center gap-2 text-googleBlue"><CheckCircle2 size={24} /> Aprovador (A)</div>
-        </motion.div>
+      {/* Tabela Interativa */}
+      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar bg-cardGlass/40 border border-white/10 rounded-3xl p-6 shadow-2xl">
+        <div className="grid grid-cols-12 gap-4 mb-4 px-4 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] sticky top-0 bg-[#050B14] py-2 z-10 border-b border-white/5">
+          <div className="col-span-4">Processo de Governança</div>
+          <div className="col-span-2 text-center">Responsável (R)</div>
+          <div className="col-span-2 text-center">Aprovador (A)</div>
+          <div className="col-span-2 text-center">Consultado (C)</div>
+          <div className="col-span-2 text-center">Informado (I)</div>
+        </div>
 
-        {/* Linhas da Tabela Animadas */}
-        {raciData.map((item, index) => (
-          <motion.div 
-            key={index} 
-            variants={rowVariants}
-            whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.08)", borderColor: "rgba(255,255,255,0.2)" }}
-            className="grid grid-cols-12 gap-6 items-center px-8 py-8 bg-cardGlass rounded-2xl border border-white/5 shadow-lg backdrop-blur-md transition-all cursor-default relative overflow-hidden group"
-          >
-            {/* Efeito de brilho no hover da linha */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 -translate-x-full group-hover:translate-x-full"></div>
-
-            {/* Domínio */}
-            <div className="col-span-6 text-3xl font-bold text-white flex items-center gap-4">
-              <div className="w-2 h-10 bg-gradient-to-b from-neonBlue to-googleBlue rounded-full"></div>
-              {item.dominio}
-            </div>
-
-            {/* Responsável (R) */}
-            <div className="col-span-3 flex justify-center">
-              <div className={`flex flex-col items-center justify-center w-full max-w-[200px] py-3 rounded-xl border ${item.resp.bg} ${item.resp.border} ${item.resp.cor}`}>
-                <span className="text-3xl font-black mb-1">{item.resp.sigla}</span>
-                <span className="text-sm font-medium tracking-wide opacity-80">{item.resp.papel}</span>
+        <div className="space-y-2">
+          {raciData.map((item) => (
+            <motion.div
+              layoutId={`row-${item.id}`}
+              key={item.id}
+              onClick={() => setSelecionado(item)}
+              whileHover={{ x: 5, backgroundColor: "rgba(255,255,255,0.05)" }}
+              className="grid grid-cols-12 gap-4 items-center p-3 bg-white/[0.02] border border-white/5 rounded-xl cursor-pointer will-change-transform transition-colors"
+            >
+              <div className="col-span-4 flex items-center gap-2">
+                <ChevronRight size={16} className="text-neonBlue opacity-50" />
+                <span className="text-lg font-bold text-white/90 truncate">{item.proc}</span>
               </div>
-            </div>
+              {[item.r, item.a, item.c, item.i].map((role, i) => (
+                <div key={i} className="col-span-2 flex justify-center">
+                  <span className={`w-10 h-7 flex items-center justify-center rounded-md border font-black text-xs ${getRoleStyle(role)}`}>
+                    {role || "-"}
+                  </span>
+                </div>
+              ))}
+            </motion.div>
+          ))}
+        </div>
+      </div>
 
-            {/* Aprovador (A) */}
-            <div className="col-span-3 flex justify-center">
-              <div className={`flex flex-col items-center justify-center w-full max-w-[200px] py-3 rounded-xl border ${item.aprov.bg} ${item.aprov.border} ${item.aprov.cor}`}>
-                <span className="text-3xl font-black mb-1">{item.aprov.sigla}</span>
-                <span className="text-sm font-medium tracking-wide opacity-80">{item.aprov.papel}</span>
-              </div>
-            </div>
-          </motion.div>
+      {/* Legenda Dinâmica de Apoio */}
+      <div className="mt-6 p-4 bg-white/5 rounded-2xl border border-white/10 grid grid-cols-5 gap-4">
+        {Object.entries(roleMap).map(([key, value]) => (
+          <div key={key} className="flex flex-col">
+            <span className={`text-xs font-black uppercase mb-1 ${getRoleStyle(key).split(' ')[0]}`}>{key}: {value.nome}</span>
+            <span className="text-[10px] text-gray-500 leading-tight italic">{value.desc}</span>
+          </div>
         ))}
       </div>
 
-    </motion.div>
+      {/* Modal Inteligente para o Wilson */}
+      <AnimatePresence>
+        {selecionado && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelecionado(null)} className="absolute inset-0 bg-black/80 backdrop-blur-md z-40 rounded-3xl" />
+            <div className="absolute inset-0 flex items-center justify-center z-50 p-20 pointer-events-none">
+              <motion.div 
+                layoutId={`row-${selecionado.id}`} 
+                transition={springTransition}
+                className="bg-bgDeep border border-white/20 p-12 rounded-[40px] shadow-2xl max-w-4xl w-full pointer-events-auto relative overflow-hidden"
+              >
+                <button onClick={() => setSelecionado(null)} className="absolute top-8 right-8 p-3 bg-white/5 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"><X size={28}/></button>
+                
+                <div className="flex items-center gap-6 mb-8">
+                  <div className="p-4 bg-neonBlue/10 rounded-2xl text-neonBlue shadow-[0_0_20px_rgba(0,229,255,0.2)]"><HelpCircle size={40}/></div>
+                  <h2 className="text-4xl font-black text-white leading-tight">{selecionado.proc}</h2>
+                </div>
+
+                <div className="grid grid-cols-2 gap-8 mb-10">
+                   {/* Papéis Detalhados no Modal */}
+                   {['r', 'a', 'c', 'i'].map((type) => (
+                     selecionado[type] && (
+                        <div key={type} className="p-5 bg-white/5 rounded-2xl border border-white/10">
+                          <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">
+                            {type === 'r' ? 'Responsável' : type === 'a' ? 'Aprovador' : type === 'c' ? 'Consultado' : 'Informado'}
+                          </p>
+                          <div className={`inline-block px-3 py-1 rounded-lg font-black text-sm mb-2 ${getRoleStyle(selecionado[type])}`}>
+                            {selecionado[type]} - {roleMap[selecionado[type]].nome}
+                          </div>
+                          <p className="text-xs text-gray-400 italic leading-relaxed">{roleMap[selecionado[type]].desc}</p>
+                        </div>
+                     )
+                   ))}
+                </div>
+
+                {/* A "COLA" PARA O WILSON */}
+                <div className="p-6 bg-neonBlue/5 border border-neonBlue/20 rounded-2xl">
+                  <p className="text-xs font-black text-neonBlue uppercase mb-2 flex items-center gap-2 tracking-tighter">
+                    <HelpCircle size={14} /> Resumo:
+                  </p>
+                  <p className="text-2xl text-white font-medium italic">"{selecionado.dica}"</p>
+                </div>
+              </motion.div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
