@@ -4,7 +4,7 @@ Este projeto é uma plataforma de apresentação interativa desenvolvida para a 
 
 ---
 
-## 🚀 Diferenciais Técnicos (Senior UX/UI)
+## 🚀 Diferenciais Técnico
 
 Diferente de apresentações comuns, este projeto foi construído como um **Dashboard Executivo** em React, focado em alta legibilidade para TVs de grande formato (55"+).
 
